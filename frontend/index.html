@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple EML Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1 style="text-align: center;">Simple EML Manager</h1>
+    <div class="controls-container">
+    <div class="button-group">
+      <button id="update-btn">Update Library</button>
+    </div>
+    
+    <div class="search-container">
+      <div class="search-fields-row"></div>
+        <select id="field">
+          <option value="all">Full Text</option>
+          <option value="subject">Subject</option>
+          <option value="sender">From</option>
+          <option value="recipients">To / Cc</option>
+          <option value="body">Body</option>
+        </select>
+        
+        <input id="query" placeholder="Search keywords..." />
+      </div>
+      <div class="search-button-row">
+        <button onclick="search()">Search</button>
+      </div>
+    </div>
+  </div>
+  
+  <ul id="results"></ul>
+  
+  <div id="update-status" style="display:none;">
+    <div id="status-text"></div>
+    <progress id="status-progress" value="0" max="100"></progress>
+    <button id="cancel-btn">Cancel</button>
+  </div>
+  
+  <script src="client.js"></script>
+</body>
+</html>
