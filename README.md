@@ -1,6 +1,8 @@
-# 📧 Simple EML Archive Manager
+# 📧 Easy Mail Librarian (EML)
 
-A lightweight and simple **searching & viewing system** for `.eml` archives, featuring **FTS5-based full-text search**, **incremental indexing**, and **on-demand email expansion** from original files.
+**Organize old emails like a library.** 
+
+Easy Mail Librarian (EML) is a lightweight and fast **searching & viewing system** for `.eml` archives, featuring **FTS5-based full-text search**, **incremental indexing**, and **on-demand email expansion** from original files.
 
 Refer to [docs/design.md](docs/design.md) for the design rational of this project.
 
