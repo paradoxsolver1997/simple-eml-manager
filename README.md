@@ -1,6 +1,6 @@
 # 📧 Easy Mail Librarian (EML)
 
-**Organize old emails like a library.** 
+> **Organize old emails like a library.** 
 
 Easy Mail Librarian (EML) is a lightweight and fast **searching & viewing system** for `.eml` archives, featuring **FTS5-based full-text search**, **incremental indexing**, and **on-demand email expansion** from original files.
 
@@ -88,66 +88,7 @@ Ideal for:
 
 ---
 
-## 📚 Philosophy
-
-### 🗃️ Local First, Always
-
-Your data should remain yours—stored locally, processed locally, and accessible without external dependencies.
-
-This project does not require accounts, subscriptions, or network services. Everything runs on your machine, under your control.
-
----
-
-### 🛠️ Simple Tools, Carefully Composed
-
-Instead of complex stacks or large frameworks, the system is built on a small number of well-understood components:
-
-* A lightweight local database
-* Native full-text search
-* A minimal Web UI for interaction
-
-The goal is not novelty, but **reliability through restraint**.
-
----
-
-### ⚖️ Lean, compositional system design.
-
-The system deliberately reuses existing platforms and tools, clearly separating responsibilities: 
-
-- Browser-based UI, allowing for easy extension with web pages and JS plugins
-- Database-backed search over minimal metadata, and on-demand access to original .eml sources. 
-- A lightweight Python backend orchestrates components, enabling cross-platform extensibility without unnecessary architectural complexity.
-
----
-
-### 🔍 Transparency Over Automation
-
-Automation is useful—but only when its behavior is understandable.
-
-This project favors:
-
-* Explicit workflows over hidden pipelines
-* Inspectable data over black-box processing
-* Clear failure modes over silent magic
-
-Users should be able to reason about what the system is doing at every stage.
-
----
-
-### 🙋 Designed for Curious Users
-
-This tool is not optimized for mass adoption. It is designed for users who:
-
-* Prefer tools they can understand
-* Value control over convenience
-* Enjoy exploring how systems work
-
-If you like reading source code, tweaking behavior, or repurposing tools for your own workflows, this project is built with you in mind.
-
----
-
-
-## 🚀 Getting Started
+## ⚒️ Installation
 
 ### 1️⃣ Install dependencies
 
@@ -173,37 +114,21 @@ DB_PATH = Path("/path/to/eml/database.db")
 
 ---
 
-### 3️⃣ Build the index
+## 🚀 Usage
 
-```bash
-python -m backend.indexer
-```
+### 1️⃣ Start the backend
 
-This will:
-
-* Parse all `.eml` files
-* Populate `emails`
-* Rebuild the FTS index
-
-Alternatively, you can also build the database in the front-end at step 5️⃣.
-
----
-
-### 4️⃣ Start the backend
-
-```bash
-uvicorn backend.api:app --reload
-```
-or simply run
+Simply run
 ```powershell
-# In Windows Powershell
-.\scripts\run.ps1
+# In Windows command prompt
+.\scripts\run.bat
 # In Linux
+chmod +x ./scripts/run.sh
 ./scripts/run.sh
 ```
 ---
 
-### 5️⃣ Open the frontend
+### 2️⃣ Open the frontend
 
 Simply open `http://localhost:8000` in your browser. Click `Update Library` to initialize the database if you have not executed 3️⃣. Once done, you are ready to enjoy fast search and convenient viewing.
 
@@ -244,6 +169,109 @@ This ensures:
 
 ---
 
+## 🏗️ Architecture Overview
+
+```text
+.eml archive
+   │
+   ▼
+[ indexer.py ]
+   │  parses
+   ▼
+┌──────────────────┐
+│ SQLite Database  │
+│                  │
+│  emails          │  ← structured storage
+│  emails_fts      │  ← FTS5 index
+└──────────────────┘
+   ▲          │
+   │          ▼
+[ search.py ]   FTS MATCH
+   │
+   ▼
+FastAPI backend
+   │
+   ▼
+Minimal JS frontend
+(click → expand → load full .eml)
+```
+
+---
+
+## 🗄️ Database Design
+
+### `emails` (source metadata)
+
+| column     | description                    |
+| ---------- | ------------------------------ |
+| id         | primary key                    |
+| path       | absolute path to `.eml` file   |
+| subject    | decoded subject                |
+| sender     | normalized sender email        |
+| recipients | comma-separated recipients     |
+| body       | plain-text body (for indexing) |
+
+### `emails_fts` (FTS5 index)
+
+* External content table (`content='emails'`)
+* Indexed fields:
+
+  * subject
+  * sender
+  * recipients
+  * body
+* Ranked using `bm25`
+
+---
+
+## 🧠 Design Rationale & Philosophy
+
+### 🗃️ Local-First, by Design
+
+This project adopts a local-first, developer-oriented approach to information management. All indexing, querying, and processing run entirely on the local machine—no cloud services, external APIs, or accounts required. This ensures data sovereignty, predictable offline behavior, long-term viability, and privacy by default.
+
+### 🛠️ Compositional, Not Monolithic
+
+The system is intentionally built from simple, well-understood components rather than a heavyweight framework:
+
+* SQLite + FTS5 for robust full-text search with minimal operational cost
+* A lightweight Python backend for orchestration and cross-platform extensibility
+* A browser-based UI as a thin interaction layer, not a dependency
+
+This separation enables independent evolution of subsystems, easier debugging, and clear reasoning about system behavior.
+
+### 🔍 Clarity Over Convenience
+
+Transparency and inspectability are favored over automation and hidden abstractions:
+
+* Explicit workflows instead of opaque pipelines
+* Inspectable data formats instead of black boxes
+* Clear failure modes instead of silent errors
+* Programmatic access as a first-class interface
+
+The Web UI is optional; all core functionality remains directly accessible through code.
+
+### 🤖 Intentional Scope
+
+To maintain focus and reduce maintenance burden, the project deliberately excludes:
+
+* User accounts and multi-user features
+* Cloud synchronization
+* Heavy customization frameworks
+* Binary-only distribution
+
+These constraints keep the system centered on correctness, clarity, and understandability rather than feature breadth.
+
+### 🙋 Software as an Engineering Artifact
+
+Beyond utility, the codebase is designed to be readable as an engineering narrative. Architectural decisions are reflected in directory structure, module boundaries, naming, and documentation that explains *why* choices were made—not just *what* they do.
+
+The result is a lean, compositional system that delivers practical functionality while remaining transparent, inspectable, and instructive by design.
+
+
+---
+
+
 ## 🧪 Debugging & Inspection
 
 ### Inspect tables
@@ -278,7 +306,14 @@ INSERT INTO emails_fts(emails_fts) VALUES('rebuild');
 
 ---
 
-## 🏁 Status
+## 🏁 Change Logs
+
+### Unreleased changes
+
+- Adding `frontend/favicon.ico`
+- Updating new run scripts in `scripts/`
+
+### Release v1.0.0
 
 ✅ Core functionality complete
 ✅ Stable indexing and search
